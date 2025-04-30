@@ -40,10 +40,7 @@ async def _safe_request(
 
 async def get_current_weather(query: str, api_key: str) -> dict:
     url = f"{WEATHERSTACK_BASE_URL}/current"
-    params = {
-        "access_key": api_key,
-        "query": query
-    }
+    params = {"access_key": api_key, "query": query}
     return await _safe_request("GET", url, params=params)
 
 

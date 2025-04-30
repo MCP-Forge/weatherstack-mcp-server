@@ -42,7 +42,9 @@ async def query_current_weather(
 
 
 @mcp.tool()
-async def query_historical_weather(query: str, historical_dates: list[str], ctx: Context) -> Union[dict, CallToolResult]:
+async def query_historical_weather(
+    query: str, historical_dates: list[str], ctx: Context
+) -> Union[dict, CallToolResult]:
     """
     Gets historical weather data for a specified location and list of dates using the Weatherstack API.
 
@@ -69,9 +71,9 @@ async def query_historical_weather(query: str, historical_dates: list[str], ctx:
     except WeatherstackAPIError as e:
         return CallToolResult(
             isError=True,
-            content=[TextContent(type="text", text=f"Weatherstack API Error {e}")]
+            content=[TextContent(type="text", text=f"Weatherstack API Error {e}")],
         )
-    
+
     return data
 
 
