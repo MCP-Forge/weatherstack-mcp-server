@@ -38,17 +38,20 @@ async def _safe_request(
             ) from e
 
 
-async def get_current_weather(query: str, api_key: str) -> dict:
+async def get_current_weather(query: str, api_key: str, units: str) -> dict:
     url = f"{WEATHERSTACK_BASE_URL}/current"
-    params = {"access_key": api_key, "query": query}
+    params = {"access_key": api_key, "query": query, "units": units}
     return await _safe_request("GET", url, params=params)
 
 
-async def get_historical_weather(query: str, historical_date: str, api_key: str):
+async def get_historical_weather(
+    query: str, historical_date: str, api_key: str, units: str
+):
     url = f"{WEATHERSTACK_BASE_URL}/historical"
     params = {
         "access_key": api_key,
         "query": query,
         "historical_date": historical_date,
+        "units": units,
     }
     return await _safe_request("GET", url, params=params)

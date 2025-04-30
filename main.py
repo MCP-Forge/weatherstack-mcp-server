@@ -10,7 +10,7 @@ from api_requests import get_current_weather, get_historical_weather
 
 @mcp.tool()
 async def query_current_weather(
-    query: str, ctx: Context
+    query: str, ctx: Context, units: str = "m",
 ) -> Union[dict, CallToolResult]:
     """
     Gets the current weather for a specified location using the Weatherstack API.
@@ -23,6 +23,10 @@ async def query_current_weather(
             - Latitude,Longitude coordinates (e.g. "40.7831,-73.9712")
             - IP address (e.g. "153.65.8.20")
             - Special keyword "fetch:ip" to auto-detect requester IP
+        units (str, optional): The unit system to use. Defaults to "m".
+            - "m" for Metric
+            - "s" for Scientific
+            - "f" for Fahrenheit
 
     Returns:
         Union[dict, CallToolResult]: A dictionary containing the current weather data,
@@ -31,7 +35,7 @@ async def query_current_weather(
     api_key = ctx.request_context.lifespan_context.api_key
 
     try:
-        data = await get_current_weather(query, api_key)
+        data = await get_current_weather(query, api_key, units)
     except WeatherstackAPIError as e:
         return CallToolResult(
             isError=True,
@@ -43,7 +47,7 @@ async def query_current_weather(
 
 @mcp.tool()
 async def query_historical_weather(
-    query: str, historical_dates: list[str], ctx: Context
+    query: str, historical_dates: list[str], ctx: Context, units: str = "m"
 ) -> Union[dict, CallToolResult]:
     """
     Gets historical weather data for a specified location and list of dates using the Weatherstack API.
@@ -57,6 +61,10 @@ async def query_historical_weather(
             - IP address (e.g. "153.65.8.20")
             - Special keyword "fetch:ip" to auto-detect requester IP
         historical_dates (list[str]): A list of historical dates in 'YYYY-MM-DD' format.
+        units (str, optional): The unit system to use. Defaults to "m".
+            - "m" for Metric
+            - "s" for Scientific
+            - "f" for Fahrenheit
 
     Returns:
         Union[dict, CallToolResult]: A dictionary containing the historical weather data,
@@ -67,7 +75,7 @@ async def query_historical_weather(
 
     try:
         historical_dates_str = ";".join(historical_dates)
-        data = await get_historical_weather(query, historical_dates_str, api_key)
+        data = await get_historical_weather(query, historical_dates_str, api_key, units)
     except WeatherstackAPIError as e:
         return CallToolResult(
             isError=True,
