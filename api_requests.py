@@ -45,3 +45,13 @@ async def get_current_weather(query: str, api_key: str) -> dict:
         "query": query
     }
     return await _safe_request("GET", url, params=params)
+
+
+async def get_historical_weather(query: str, historical_date: str, api_key: str):
+    url = f"{WEATHERSTACK_BASE_URL}/historical"
+    params = {
+        "access_key": api_key,
+        "query": query,
+        "historical_date": historical_date,
+    }
+    return await _safe_request("GET", url, params=params)
