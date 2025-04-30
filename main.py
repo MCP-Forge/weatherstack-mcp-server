@@ -5,7 +5,7 @@ from mcp.types import CallToolResult, TextContent
 
 from config import mcp
 from exceptions import WeatherstackAPIError
-from api_requests import get_current_weather, get_historical_weather
+from api_requests import get_current_weather, get_daily_historical_weather, get_hourly_historical_weather
 
 
 @mcp.tool()
@@ -46,11 +46,11 @@ async def query_current_weather(
 
 
 @mcp.tool()
-async def query_historical_weather(
+async def query_daily_historical_weather(
     query: str, historical_dates: list[str], ctx: Context, units: str = "m"
 ) -> Union[dict, CallToolResult]:
     """
-    Gets historical weather data for a specified location and list of dates using the Weatherstack API.
+    Gets daily historical weather data for a specified location and list of dates using the Weatherstack API.
 
     Parameters:
         query (str): The location to retrieve weather data for.
@@ -75,7 +75,55 @@ async def query_historical_weather(
 
     try:
         historical_dates_str = ";".join(historical_dates)
-        data = await get_historical_weather(query, historical_dates_str, api_key, units)
+        data = await get_daily_historical_weather(query, historical_dates_str, api_key, units)
+    except WeatherstackAPIError as e:
+        return CallToolResult(
+            isError=True,
+            content=[TextContent(type="text", text=f"Weatherstack API Error {e}")],
+        )
+
+    return data
+
+
+@mcp.tool()
+async def query_hourly_historical_weather(
+    query: str, historical_dates: list[str], ctx: Context, units: str = "m", interval: int = 3
+) -> Union[dict, CallToolResult]:
+    """
+    Gets hourly historical weather data for a specified location and list of dates using the Weatherstack API.
+
+    Parameters:
+        query (str): The location to retrieve weather data for.
+            Supported formats:
+            - City name (e.g. "New York")
+            - ZIP code (UK, Canada, US) (e.g. "99501")
+            - Latitude,Longitude coordinates (e.g. "40.7831,-73.9712")
+            - IP address (e.g. "153.65.8.20")
+            - Special keyword "fetch:ip" to auto-detect requester IP
+        historical_dates (list[str]): A list of historical dates in 'YYYY-MM-DD' format.
+        units (str, optional): The unit system to use. Defaults to "m".
+            - "m" for Metric
+            - "s" for Scientific
+            - "f" for Fahrenheit
+        interval (int, optional): The interval for hourly data aggregation. Defaults to 3.
+            Supported values:
+            - 1 for hourly
+            - 3 for 3-hourly (default)
+            - 6 for 6-hourly
+            - 12 for 12-hourly (day/night)
+            - 24 for daily average
+        
+
+    Returns:
+        Union[dict, CallToolResult]: A dictionary containing the historical weather data,
+        or a CallToolResult with an error message if the request fails.
+    """
+
+    api_key = ctx.request_context.lifespan_context.api_key
+
+    try:
+        historical_dates_str = ";".join(historical_dates)
+        data = await get_hourly_historical_weather(query, historical_dates_str, api_key, units, interval)
     except WeatherstackAPIError as e:
         return CallToolResult(
             isError=True,

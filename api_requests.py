@@ -1,3 +1,5 @@
+from typing import Optional
+
 from httpx import AsyncClient, HTTPStatusError, RequestError
 
 from exceptions import WeatherstackAPIError
@@ -45,8 +47,12 @@ async def get_current_weather(query: str, api_key: str, units: str) -> dict:
 
 
 async def get_historical_weather(
-    query: str, historical_date: str, api_key: str, units: str
-):
+    query: str,
+    historical_date: str,
+    api_key: str,
+    units: str,
+    interval: Optional[int] = None,
+) -> dict:
     url = f"{WEATHERSTACK_BASE_URL}/historical"
     params = {
         "access_key": api_key,
@@ -54,4 +60,20 @@ async def get_historical_weather(
         "historical_date": historical_date,
         "units": units,
     }
+    if interval:
+        params["hourly"] = 1
+        params["interval"] = interval
+
     return await _safe_request("GET", url, params=params)
+
+
+async def get_daily_historical_weather(
+    query: str, historical_date: str, api_key: str, units: str
+) -> dict:
+    return await get_historical_weather(query, historical_date, api_key, units)
+
+
+async def get_hourly_historical_weather(
+    query: str, historical_date: str, api_key: str, units: str, interval: int
+) -> dict:
+    return await get_historical_weather(query, historical_date, api_key, units, interval)
