@@ -76,4 +76,33 @@ async def get_daily_historical_weather(
 async def get_hourly_historical_weather(
     query: str, historical_date: str, api_key: str, units: str, interval: int
 ) -> dict:
-    return await get_historical_weather(query, historical_date, api_key, units, interval)
+    return await get_historical_weather(
+        query, historical_date, api_key, units, interval
+    )
+
+
+async def get_forecast(query: str, forecast_days: int, api_key: str) -> dict:
+    url = f"{WEATHERSTACK_BASE_URL}/forecast"
+    params = {
+        "access_key": api_key,
+        "query": query,
+        "forecast_days": forecast_days,
+    }
+    return await _safe_request("GET", url, params=params)
+
+
+async def get_marine_weather(
+    lat: float, lon: float, api_key: str, units: str, interval: Optional[int]
+) -> dict:
+    url = f"{WEATHERSTACK_BASE_URL}/marine"
+    params = {
+        "tide": "yes",
+        "access_key": api_key,
+        "latitude": lat,
+        "longitude": lon,
+        "units": units,
+    }
+    if interval:
+        params["hourly"] = 1
+        params["interval"] = interval
+    return await _safe_request("GET", url, params=params)
