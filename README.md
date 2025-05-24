@@ -6,6 +6,10 @@ The goal of this project is to expose Weatherstack's functionality through MCP-c
 
 ---
 
+## Subscribe to Weatherstack
+
+You can subscribe to Weatherstack via http://weatherstack.com?utm_source=FirstPromoter&utm_medium=Affiliate&fpr=damyan48.
+
 ## 🧠 What is MCP?
 
 MCP (Model Context Protocol) is a lightweight protocol designed to let **AI agents interact with external tools and APIs** in a structured and modular way. Think of it like **USB for AI** — this server acts as a "driver" for the Weatherstack platform.
